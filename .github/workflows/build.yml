@@ -27,7 +27,11 @@ jobs:
           else
             base=HEAD~1
           fi
-          changed=$(git diff --name-only $base HEAD | grep '^servers/' | awk -F/ '{print $2}' | sort -u | jq -R . | jq -s .)
+          # On first commit HEAD~1 doesn't exist — fall back to all servers
+          changed=$(git diff --name-only $base HEAD 2>/dev/null | grep '^servers/' | awk -F/ '{print $2}' | sort -u | jq -R . | jq -s .)
+          if [ "$changed" = "[]" ] || [ -z "$changed" ]; then
+            changed=$(ls servers/ | jq -R . | jq -s .)
+          fi
           echo "matrix={\"server\":$changed}" >> $GITHUB_OUTPUT
           [ "$changed" = "[]" ] && echo "has_changes=false" >> $GITHUB_OUTPUT || echo "has_changes=true" >> $GITHUB_OUTPUT
 
