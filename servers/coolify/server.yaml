@@ -1,0 +1,14 @@
+coolify:
+  type: server
+  title: Coolify
+  description: Coolify self-hosted deployment platform MCP server
+  image: ghcr.io/thcloudai/coolify-mcp:latest
+  secrets:
+    - name: COOLIFY_ACCESS_TOKEN
+      env: COOLIFY_ACCESS_TOKEN
+      example: your_coolify_access_token_here
+    - name: COOLIFY_BASE_URL
+      env: COOLIFY_BASE_URL
+      example: https://coolify.example.com
+  allowHosts:
+    - coolify.thit.io:443

@@ -1,0 +1,11 @@
+meta-ads:
+  type: server
+  title: Meta Ads
+  description: Meta Ads MCP server for managing Facebook/Instagram ad campaigns
+  image: ghcr.io/thcloudai/meta-ads-mcp:latest
+  secrets:
+    - name: META_ACCESS_TOKEN
+      env: META_ACCESS_TOKEN
+      example: your_meta_access_token_here
+  allowHosts:
+    - graph.facebook.com:443

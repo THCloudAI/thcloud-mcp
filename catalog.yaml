@@ -1,0 +1,42 @@
+registry:
+  meta-ads:
+    type: server
+    title: Meta Ads
+    description: Meta Ads MCP server for managing Facebook/Instagram ad campaigns
+    image: ghcr.io/thcloudai/meta-ads-mcp:latest
+    secrets:
+      - name: META_ACCESS_TOKEN
+        env: META_ACCESS_TOKEN
+        example: your_meta_access_token_here
+    allowHosts:
+      - graph.facebook.com:443
+
+  line-bot:
+    type: server
+    title: LINE Bot
+    description: LINE messaging platform MCP server
+    image: ghcr.io/thcloudai/line-bot-mcp:latest
+    secrets:
+      - name: CHANNEL_ACCESS_TOKEN
+        env: CHANNEL_ACCESS_TOKEN
+        example: your_channel_access_token_here
+      - name: DESTINATION_USER_ID
+        env: DESTINATION_USER_ID
+        example: your_user_or_group_id_here
+    allowHosts:
+      - api.line.me:443
+
+  coolify:
+    type: server
+    title: Coolify
+    description: Coolify self-hosted deployment platform MCP server
+    image: ghcr.io/thcloudai/coolify-mcp:latest
+    secrets:
+      - name: COOLIFY_ACCESS_TOKEN
+        env: COOLIFY_ACCESS_TOKEN
+        example: your_coolify_access_token_here
+      - name: COOLIFY_BASE_URL
+        env: COOLIFY_BASE_URL
+        example: https://coolify.example.com
+    allowHosts:
+      - coolify.thit.io:443

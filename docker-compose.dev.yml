@@ -1,0 +1,45 @@
+# Dev workflow:
+#   Build:  docker compose -f docker-compose.dev.yml --profile build build [service]
+#   Run:    docker compose -f docker-compose.dev.yml up -d
+#   Reload: docker compose -f docker-compose.dev.yml restart mcp-gateway
+#
+# Images are built locally with the same GHCR tag names.
+# The gateway uses --pull never so it finds them locally without touching GHCR.
+
+services:
+  mcp-gateway:
+    image: docker/mcp-gateway
+    container_name: mcp-gateway
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8599}:${PORT:-8599}"
+    command:
+      - --transport=streaming
+      - --port=${PORT:-8599}
+      - --catalog=/catalog.yaml
+      - --servers=${MCP_SERVERS}
+      - --secrets=/run/secrets/env
+    secrets:
+      - env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./catalog.yaml:/catalog.yaml:ro
+
+  meta-ads-mcp:
+    build: ./servers/meta-ads
+    image: ghcr.io/thcloudai/meta-ads-mcp:latest
+    profiles: [build]
+
+  line-bot-mcp:
+    build: ./servers/line-bot
+    image: ghcr.io/thcloudai/line-bot-mcp:latest
+    profiles: [build]
+
+  coolify-mcp:
+    build: ./servers/coolify
+    image: ghcr.io/thcloudai/coolify-mcp:latest
+    profiles: [build]
+
+secrets:
+  env:
+    file: ./.env

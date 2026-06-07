@@ -1,0 +1,62 @@
+name: Build MCP Server Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'servers/**'
+  pull_request:
+    paths:
+      - 'servers/**'
+
+jobs:
+  detect:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+      has_changes: ${{ steps.set-matrix.outputs.has_changes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            base=${{ github.event.pull_request.base.sha }}
+          else
+            base=HEAD~1
+          fi
+          changed=$(git diff --name-only $base HEAD | grep '^servers/' | awk -F/ '{print $2}' | sort -u | jq -R . | jq -s .)
+          echo "matrix={\"server\":$changed}" >> $GITHUB_OUTPUT
+          [ "$changed" = "[]" ] && echo "has_changes=false" >> $GITHUB_OUTPUT || echo "has_changes=true" >> $GITHUB_OUTPUT
+
+  build:
+    needs: detect
+    if: needs.detect.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix: ${{ fromJson(needs.detect.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v5
+        with:
+          context: ./servers/${{ matrix.server }}
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.server }}-mcp:latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.server }}-mcp:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

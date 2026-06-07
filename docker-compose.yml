@@ -1,0 +1,22 @@
+services:
+  mcp-gateway:
+    image: docker/mcp-gateway
+    container_name: mcp-gateway
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8599}:${PORT:-8599}"
+    command:
+      - --transport=streaming
+      - --port=${PORT:-8599}
+      - --catalog=/catalog.yaml
+      - --servers=${MCP_SERVERS}
+      - --secrets=/run/secrets/env
+    secrets:
+      - env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./catalog.yaml:/catalog.yaml:ro
+
+secrets:
+  env:
+    file: ./.env

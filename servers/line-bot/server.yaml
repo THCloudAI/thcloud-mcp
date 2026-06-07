@@ -1,0 +1,14 @@
+line-bot:
+  type: server
+  title: LINE Bot
+  description: LINE messaging platform MCP server
+  image: ghcr.io/thcloudai/line-bot-mcp:latest
+  secrets:
+    - name: CHANNEL_ACCESS_TOKEN
+      env: CHANNEL_ACCESS_TOKEN
+      example: your_channel_access_token_here
+    - name: DESTINATION_USER_ID
+      env: DESTINATION_USER_ID
+      example: your_user_or_group_id_here
+  allowHosts:
+    - api.line.me:443
