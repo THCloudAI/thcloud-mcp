@@ -63,7 +63,7 @@ jobs:
       - uses: docker/build-push-action@v5
         with:
           context: ./servers/${{ matrix.server }}
-          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          push: ${{ github.ref == 'refs/heads/main' }}
           tags: |
             ghcr.io/${{ steps.owner.outputs.name }}/${{ matrix.server }}-mcp:latest
             ghcr.io/${{ steps.owner.outputs.name }}/${{ matrix.server }}-mcp:${{ github.sha }}
