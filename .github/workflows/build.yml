@@ -69,3 +69,14 @@ jobs:
             ghcr.io/${{ steps.owner.outputs.name }}/${{ matrix.server }}-mcp:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Make package public
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          gh api \
+            --method PATCH \
+            -H "Accept: application/vnd.github+json" \
+            /orgs/${{ github.repository_owner }}/packages/container/${{ matrix.server }}-mcp \
+            -f visibility=public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
